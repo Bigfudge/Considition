@@ -1,59 +1,70 @@
-from collections import defaultdict
+import numpy as np
+try:
+    import Queue as Q  # ver. < 3.0
+except ImportError:
+    import queue as Q
+
+class Node:
+    def __init__(self, name, cost, heuristic):
+        self.name=name
+        self.neighbors= Q.PriorityQueue()
+        self.cost= cost;
+        self.heuristic=heuristic;
+    def setCost(self, value):
+        self.cost=value
+
+    def setHeuristic(self, value):
+        self.heuristic=value
+
+    def getName(self):
+        return self.name
+
+    def getCost(self):
+        return self.cost
+
+    def getHeuristic(self):
+        return self.heuristic
+
+    def addNeighbor(self, newNeighbor):
+        self.neighbors.put(newNeighbor)
+
+    def getNearestNeighbor(self):
+        return self.neighbors.get()
+
+    def getAllNeighbors(self):
+        return self.neighbors
+
+    def __cmp__(self, other):
+        return (self.cost + self.heuristic)-(other.getCost() + other.getHeuristic())
+
+class Grapf(object):
+    def __init__(self):
+        self.nodes = Q.PriorityQueue()
+        self.frontier = Q.PriorityQueue()
+        self.currentNode = 0
+    def addNode(self, newNode):
+        seld.nodes.put(newNode)
+
+    def Astar(start, end):
+        currentNode = start
+        frontier.put(currentNode)
+        while not frontier.empty():
+            current = frontier.get()
+
+            if current == goal:
+            break
+            frontier.put(currentNode.getAllNeighbors())
 
 
-class Graph(object):
-    """ Graph data structure, undirected by default. """
 
-    def __init__(self, connections, directed=False):
-        self._graph = defaultdict(set)
-        self._directed = directed
-        self.add_connections(connections)
 
-    def add_connections(self, connections):
-        """ Add connections (list of tuple pairs) to graph """
 
-        for node1, node2 in connections:
-            self.add(node1, node2)
+n1 = Node('node1',10, 0)
+n2 = Node('node2', 5, 2)
+n3 = Node('node3', 6, 0)
 
-    def add(self, node1, node2):
-        """ Add connection between node1 and node2 """
+n1.addNeighbor(n2)
+n1.addNeighbor(n3)
 
-        self._graph[node1].add(node2)
-        if not self._directed:
-            self._graph[node2].add(node1)
-
-    def remove(self, node):
-        """ Remove all references to node """
-
-        for n, cxns in self._graph.iteritems():
-            try:
-                cxns.remove(node)
-            except KeyError:
-                pass
-        try:
-            del self._graph[node]
-        except KeyError:
-            pass
-
-    def is_connected(self, node1, node2):
-        """ Is node1 directly connected to node2 """
-
-        return node1 in self._graph and node2 in self._graph[node1]
-
-    def find_path(self, node1, node2, path=[]):
-        """ Find any path between node1 and node2 (may not be shortest) """
-
-        path = path + [node1]
-        if node1 == node2:
-            return path
-        if node1 not in self._graph:
-            return None
-        for node in self._graph[node1]:
-            if node not in path:
-                new_path = self.find_path(node, node2, path)
-                if new_path:
-                    return new_path
-        return None
-
-    def __str__(self):
-        return '{}({})'.format(self.__class__.__name__, dict(self._graph))
+test= n1.getNearestNeighbor().name
+print(test)
