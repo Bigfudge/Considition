@@ -42,25 +42,32 @@ class Grapf(object):
         self.nodes = Q.PriorityQueue()
         self.frontier = Q.PriorityQueue()
         self.currentNode = 0
+        self.cameFrom= {}
+        self.costSoFar= {}
+    
     def addNode(self, newNode):
         seld.nodes.put(newNode)
 
     def Astar(start, end):
-        currentNode = start
-        frontier.put(currentNode)
-        while not frontier.empty():
-            current = frontier.get()
+        self.frontier.put(start)
+        self.came_from[start] = None
+        self.cost_so_far[start] = 0
 
-            if current == goal:
-            break
+        while not frontier.empty():
+            self.currentNode = self.frontier.get()
+
+            if self.currentNode == end:
+                break
             frontier.put(currentNode.getAllNeighbors())
+            for i in range(len(frontier)):
+
 
 
 
 
 
 n1 = Node('node1',10, 0)
-n2 = Node('node2', 5, 2)
+n2 = Node('node2', 5, 0)
 n3 = Node('node3', 6, 0)
 
 n1.addNeighbor(n2)
