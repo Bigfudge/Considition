@@ -5,28 +5,24 @@ except ImportError:
     import queue as Q
 
 class Node:
-    def __init__(self, name, cost, heuristic):
+    def __init__(self, name, heuristic):
         self.name=name
         self.neighbors= Q.PriorityQueue()
-        self.cost= cost;
-        self.heuristic=heuristic;
-    def setCost(self, value):
-        self.cost=value
+        self.weights={}
+        self.heuristic=heuristic
+    def setWeight(self, name, value):
+        self.weights[name]=value
 
-    def setHeuristic(self, value):
-        self.heuristic=value
-
-    def getName(self):
-        return self.name
-
-    def getCost(self):
-        return self.cost
+    def getCost(self, name):
+        return self.weights[name]
 
     def getHeuristic(self):
         return self.heuristic
 
-    def addNeighbor(self, newNeighbor):
-        self.neighbors.put(newNeighbor)
+    def addNeighbor(self, newNeighbor, weight):
+        name= newNeighbor.name
+        self.neighbors.put(newNeighbor, weight)
+        self.weights[name]=weight
 
     def getNearestNeighbor(self):
         return self.neighbors.get()
@@ -34,65 +30,66 @@ class Node:
     def getAllNeighbors(self):
         return self.neighbors
 
-    def __cmp__(self, other):
-        return (self.cost + self.heuristic)-(other.getCost() + other.getHeuristic())
+    # def __cmp__(self, other):
+    #     name=other.name
+    #     return (self.cost + self.heuristic)-(other.getCost(name) + other.getHeuristic(name))
 
 class Grapf(object):
     def __init__(self):
-        self.nodes = Q.PriorityQueue()
+        self.nodes = {}
         self.frontier = Q.PriorityQueue()
         self.currentNode = 0
         self.cameFrom= {}
         self.costSoFar= {}
 
     def addNode(self, newNode):
-        self.nodes.put(newNode)
-    def getCost(a, b):
-        
+        name = newNode.name
+        self.nodes[name]=newNode
+
 
 def Astar(start, end, graph):
     came_from= {}
     cost_so_far= {}
-    graph.frontier.put(start)
+    graph.frontier.put(start,0)
     came_from[start.name] = None
     cost_so_far[start.name] = 0
 
     while not graph.frontier.empty():
         graph.currentNode = graph.frontier.get()
-        print(graph.currentNode.name)
 
         if graph.currentNode.name == end.name:
+            print('BREAK')
             break
-        print(graph.currentNode.name)
 
         currentNeighbors= graph.currentNode.getAllNeighbors()
-
         for next in currentNeighbors.queue:
-            new_cost = cost_so_far[currentNode.name] + graph.getCost(currentNode, next)
+            new_cost = cost_so_far[graph.currentNode.name] + graph.currentNode.getCost(next.name)
 
-            print(new_cost)
+            # print('New Cost', new_cost)
+            print('Name:', next.name, 'Value:', new_cost)
+            print('Cost so far:', cost_so_far)
 
-        if next not in cost_so_far or new_cost < cost_so_far[next]:
-            cost_so_far[next.name] = new_cost
-            priority = new_cost + graph.getHeuristic(end, next)
-            frontier.put(next, priority)
-            came_from[next.name] = current
+            if next not in cost_so_far or new_cost < cost_so_far[next]:
+                cost_so_far[next.name] = new_cost
+                priority = new_cost + next.getHeuristic()
+                graph.frontier.put(next, priority)
+                came_from[next.name] = graph.currentNode
 
-        return costSoFar
+    return came_from, cost_so_far
 
 
 def main():
-    n1 = Node('Start',1, 0)
-    n2 = Node('node2',5, 0)
-    n3 = Node('node3',6, 0)
-    n4 = Node('node4',2, 0)
-    n5 = Node('Goal',1, 0)
+    n1 = Node('Start',0)
+    n2 = Node('node2',0)
+    n3 = Node('node3',0)
+    n4 = Node('node4',0)
+    n5 = Node('Goal',0)
 
-    n1.addNeighbor(n2)
-    n1.addNeighbor(n3)
-    n2.addNeighbor(n4)
-    n3.addNeighbor(n5)
-    n4.addNeighbor(n5)
+    n1.addNeighbor(n2,1)
+    n1.addNeighbor(n3,1)
+    n2.addNeighbor(n4,1)
+    n3.addNeighbor(n5,5)
+    n4.addNeighbor(n5,6)
 
     g = Grapf()
     g.addNode(n1)
@@ -101,9 +98,10 @@ def main():
     g.addNode(n4)
     g.addNode(n5)
 
-    costTot = Astar(n1, n5, g)
+    came_from, cost_so_far = Astar(n1, n5, g)
 
-    print(costTot)
+    #print(came_from)
+    print(cost_so_far)
 
 
 main()
